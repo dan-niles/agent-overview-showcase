@@ -1,3 +1,3 @@
 [workspace]
 title = "Agent Overview Showcase"
-packages = ["1_batch_triage", "2_prompt_chain", "3_nested_delegation", "4_connected_tools", "5_support_desk", "6_ops_center", "7_durable_claims", "single_agent", "parallel_reviews",  "daily_digest", "unwired_agents", "mcp_agent", "routing_hub", "evaluator_optimizer", "human_in_the_loop", "event_pipeline", "durable_peers"]
+packages = ["1_batch_triage", "2_prompt_chain", "3_nested_delegation", "4_connected_tools", "5_support_desk", "6_ops_center", "7_durable_claims", "single_agent", "parallel_reviews",  "daily_digest", "unwired_agents", "mcp_agent", "routing_hub", "evaluator_optimizer", "human_in_the_loop", "event_pipeline"]
