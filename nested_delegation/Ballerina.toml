@@ -1,0 +1,10 @@
+[package]
+org = "danniles"
+name = "nested_delegation"
+version = "0.1.0"
+distribution = "2201.13.5"
+title = "Nested Delegation"
+
+[build-options]
+sticky = true
+observabilityIncluded = true

@@ -1,0 +1,3 @@
+[workspace]
+title = "Agent Overview Showcase"
+packages = ["single_agent", "support_desk", "nested_delegation", "parallel_reviews", "batch_triage", "daily_digest", "unwired_agents", "ops_center", "mcp_agent", "routing_hub", "orchestrator_workers", "evaluator_optimizer", "human_in_the_loop", "event_pipeline", "durable_peers"]

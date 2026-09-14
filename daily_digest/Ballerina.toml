@@ -1,0 +1,10 @@
+[package]
+org = "danniles"
+name = "daily_digest"
+version = "0.1.0"
+distribution = "2201.13.5"
+title = "Daily Digest"
+
+[build-options]
+sticky = true
+observabilityIncluded = true

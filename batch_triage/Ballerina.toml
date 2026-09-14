@@ -1,0 +1,10 @@
+[package]
+org = "danniles"
+name = "batch_triage"
+version = "0.1.0"
+distribution = "2201.13.5"
+title = "Batch Triage"
+
+[build-options]
+sticky = true
+observabilityIncluded = true

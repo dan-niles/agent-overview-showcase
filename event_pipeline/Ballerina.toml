@@ -1,0 +1,10 @@
+[package]
+org = "danniles"
+name = "event_pipeline"
+version = "0.1.0"
+distribution = "2201.13.5"
+title = "Event Pipeline"
+
+[build-options]
+sticky = true
+observabilityIncluded = true
