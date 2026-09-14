@@ -11,8 +11,8 @@ final ai:Agent makerAgent = check new (
 final ai:Agent checkerAgent = check new (
     systemPrompt = {
         role: string `Checker`,
-        instructions: string `You review the maker's decision and send small corrections back to the maker.`
-    }, model = deskModel, tools = [makerAgentTool]
+        instructions: string `You review the maker's decision.`
+    }, model = deskModel, tools = []
 );
 final ai:Agent executorAgent = check new (
     systemPrompt = {

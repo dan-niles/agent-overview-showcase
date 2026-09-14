@@ -3,7 +3,7 @@ import ballerina/http;
 listener http:Listener httpDefaultListener = http:getDefaultListener();
 
 service /decisions on httpDefaultListener {
-    // Maker-checker: the maker drafts, the checker reviews; the checker can push corrections back to the maker.
+    // Maker-checker: the maker drafts, the checker reviews.
     resource function post propose(@http:Payload Decision decision) returns string|error {
         string draft = check makerAgent.run(string `Decide on ${decision.orderId}`, decision.orderId);
         string result = check checkerAgent.run(string `Review: ${draft}`, decision.orderId);

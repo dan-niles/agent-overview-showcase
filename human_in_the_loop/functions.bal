@@ -10,9 +10,3 @@ isolated function lookupOrder(string orderId) returns string {
 isolated function issueRefund(string orderId) returns string {
     return string `Refunded ${orderId}`;
 }
-# Sends a correction back to the maker.
-@ai:AgentTool
-isolated function makerAgentTool(ai:Context ctx, string query) returns string|error {
-    string result = check makerAgent.run(query, context = ctx);
-    return result;
-}

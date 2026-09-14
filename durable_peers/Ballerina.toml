@@ -7,4 +7,3 @@ title = "Durable Peers"
 
 [build-options]
 sticky = true
-observabilityIncluded = true

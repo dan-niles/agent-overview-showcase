@@ -14,8 +14,7 @@ service /help\-desk on agentChatListener {
 
 service /shipping\-api on httpDefaultListener {
     resource function post quotes(@http:Payload QuoteRequest payload) returns string|error {
-        string orderSummary = check orderAgent.run(string `Summarise order ${payload.orderId} for a shipping quote.`, payload.orderId);
-        string rate = check shippingRatesAgent.run(string `Quote shipping to ${payload.destination} for: ${orderSummary}`, payload.orderId);
+        string rate = check orderAgent.run(string `Quote shipping to ${payload.destination} for order ${payload.orderId}.`, payload.orderId);
         return rate;
     }
 }

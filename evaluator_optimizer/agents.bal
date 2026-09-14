@@ -11,8 +11,8 @@ final ai:Agent generatorAgent = check new (
 final ai:Agent evaluatorAgent = check new (
     systemPrompt = {
         role: string `Evaluator`,
-        instructions: string `You score a text from 0 to 100 and say what to fix. Ask the generator directly for a fix when the problem is small.`
-    }, model = studioModel, tools = [generatorAgentTool]
+        instructions: string `You score a text from 0 to 100 and say what to fix.`
+    }, model = studioModel, tools = []
 );
 final ai:Agent translatorAgent = check new (
     systemPrompt = {
