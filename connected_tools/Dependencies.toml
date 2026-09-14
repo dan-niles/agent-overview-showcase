@@ -387,7 +387,7 @@ modules = [
 
 [[package]]
 org = "danniles"
-name = "orchestrator_workers"
+name = "connected_tools"
 version = "0.1.0"
 dependencies = [
 	{org = "ballerina", name = "ai"},
@@ -395,6 +395,6 @@ dependencies = [
 	{org = "ballerinai", name = "observe"}
 ]
 modules = [
-	{org = "danniles", packageName = "orchestrator_workers", moduleName = "orchestrator_workers"}
+	{org = "danniles", packageName = "connected_tools", moduleName = "connected_tools"}
 ]
 

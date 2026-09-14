@@ -1,4 +1,7 @@
 import ballerinax/kafka;
+import ballerinax/metrics.logs as _;
+
+import wso2/icp.runtime.bridge as _;
 
 listener kafka:Listener eventsIn = new (kafka:DEFAULT_URL, {groupId: "pipeline", topics: ["events"]});
 listener kafka:Listener batchesIn = new (kafka:DEFAULT_URL, {groupId: "pipeline", topics: ["batches"]});

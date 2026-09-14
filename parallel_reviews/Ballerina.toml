@@ -7,4 +7,3 @@ title = "Parallel Reviews"
 
 [build-options]
 sticky = true
-observabilityIncluded = true

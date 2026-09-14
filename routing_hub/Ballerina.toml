@@ -7,4 +7,3 @@ title = "Routing Hub"
 
 [build-options]
 sticky = true
-observabilityIncluded = true

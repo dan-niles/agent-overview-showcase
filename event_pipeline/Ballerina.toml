@@ -6,5 +6,6 @@ distribution = "2201.13.5"
 title = "Event Pipeline"
 
 [build-options]
+remoteManagement = true
 sticky = true
 observabilityIncluded = true
