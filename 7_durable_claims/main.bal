@@ -1,6 +1,8 @@
 import ballerina/http;
+import ballerina/workflow.management.rest as _;
 
-service /agent on new http:Listener(8080) {
+// A chat turn can block on a human task/approval far past the 60s default, so the listener never times it out.
+service /agent on new http:Listener(8080, timeout = 0) {
     resource function post conversations(NewConversation payload) returns string|error {
         string claimId = check claimAgent.run(string `user=${payload.username}`);
         return claimId;

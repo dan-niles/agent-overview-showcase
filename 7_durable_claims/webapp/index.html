@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Durable Claims</title>
+<style>
+  :root {
+    --bg: #f4f3ef; --panel: #fff; --ink: #1c1c1a; --muted: #6b6a66; --line: #e3e1da;
+    --alice: #2563eb; --jane: #b45309; --john: #7c3aed; --ok: #15803d; --bad: #b91c1c;
+    --radius: 12px; font-family: -apple-system, "SF Pro Text", Inter, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.45; }
+  header { display: flex; align-items: center; gap: 16px; padding: 12px 24px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  header h1 { font-size: 16px; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+  header .sub { color: var(--muted); }
+  .spacer { flex: 1; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #eee; color: var(--muted); }
+  .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .pill.up { background: #dcfce7; color: var(--ok); }
+  .pill.down { background: #fee2e2; color: var(--bad); }
+  header a { color: var(--muted); font-size: 12px; }
+  main { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 16px; padding: 16px 24px 24px; min-height: calc(100vh - 53px); }
+  @media (max-width: 1100px) { main { grid-template-columns: 1fr; } }
+  .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); display: flex; flex-direction: column; min-height: 0; }
+  .card > .head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .card > .head h2 { margin: 0; font-size: 13px; font-weight: 650; text-transform: uppercase; letter-spacing: 0.06em; }
+  .card > .head .who { font-size: 12px; color: var(--muted); }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 700; }
+  .card > .body { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .grow { flex: 1; }
+  button { font: inherit; border: 1px solid var(--line); background: #fff; color: var(--ink); padding: 7px 12px; border-radius: 8px; cursor: pointer; font-weight: 550; }
+  button:hover { border-color: #c9c6bd; background: #faf9f6; }
+  button.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  button.primary:hover { background: #333; }
+  button.ok { color: var(--ok); } button.bad { color: var(--bad); }
+  button:disabled { opacity: 0.5; cursor: default; }
+  input, textarea { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; width: 100%; background: #fff; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .muted { color: var(--muted); } .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  .empty { color: var(--muted); text-align: center; padding: 24px 8px; font-size: 13px; }
+
+  /* chat */
+  #chat { min-height: 380px; max-height: 60vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; }
+  .msg { max-width: 82%; padding: 9px 12px; border-radius: 14px; white-space: pre-wrap; word-wrap: break-word; }
+  .msg.me { align-self: flex-end; background: var(--alice); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.agent { align-self: flex-start; background: #f1efe9; border-bottom-left-radius: 4px; }
+  .msg.sys { align-self: center; background: none; color: var(--muted); font-size: 12px; text-align: center; }
+  .msg.pending { color: var(--muted); font-style: italic; }
+  .msg.pending::after { content: "…"; animation: blink 1s steps(3) infinite; }
+  @keyframes blink { 50% { opacity: 0.3; } }
+  .composer { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line); }
+  .quick { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 16px 12px; }
+  .quick button { font-size: 12px; padding: 4px 9px; border-radius: 999px; color: var(--muted); }
+
+  /* tasks */
+  .task { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #fbfaf7; }
+  .task .title { font-weight: 650; }
+  .task dl { display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; margin: 0; font-size: 13px; }
+  .task dt { color: var(--muted); } .task dd { margin: 0; word-break: break-word; }
+  .badge { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: #eee; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* ops */
+  .timeline { display: flex; flex-direction: column; gap: 6px; }
+  .step { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: baseline; font-size: 13px; }
+  .step .dot { width: 10px; height: 10px; border-radius: 50%; background: #d4d1c8; margin-top: 4px; }
+  .step.COMPLETED .dot { background: var(--ok); } .step.FAILED .dot { background: var(--bad); }
+  .step.RUNNING .dot, .step.PENDING .dot { background: #f59e0b; box-shadow: 0 0 0 3px #fde68a; }
+  .step .io { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; font-size: 13px; }
+  .kv .k { color: var(--muted); }
+  .notif { border-left: 3px solid var(--alice); padding: 6px 10px; background: #fbfaf7; border-radius: 0 8px 8px 0; }
+  .notif .t { font-weight: 600; } .notif .b { color: var(--muted); font-size: 13px; }
+  .count { background: var(--alice); color: #fff; border-radius: 999px; font-size: 11px; padding: 1px 7px; font-weight: 700; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Durable Claims</h1>
+  <span class="sub">one durable agent · three human gates · survives restarts</span>
+  <span class="spacer"></span>
+  <span id="agentPill" class="pill">checking agent</span>
+  <a id="temporalLink" href="http://localhost:8233" target="_blank" rel="noopener">Temporal UI ↗</a>
+</header>
+
+<main>
+  <!-- Alice -->
+  <div class="col">
+    <section class="card grow">
+      <div class="head">
+        <span class="avatar" style="background:var(--alice)">A</span>
+        <h2>Claimant</h2><span class="who">alice · chats with the Smart Claim agent</span>
+        <span class="spacer"></span>
+        <button id="newConv">New conversation</button>
+      </div>
+      <div id="chat"></div>
+      <div class="quick">
+        <button data-say="I crashed my rental car on a client visit, about $4200 in damages.">Big claim ($4200)</button>
+        <button data-say="My phone screen cracked on a work trip, repair cost $600.">Small claim ($600)</button>
+        <button data-say="Hotel room flooded and ruined my laptop, about $1800.">Mid claim ($1800)</button>
+        <button id="attach">📎 Attach receipt</button>
+        <button data-say="Please pay out the claim now.">Pay it</button>
+        <button data-say="What is the status of my claim?">Status?</button>
+      </div>
+      <form class="composer" id="composer">
+        <input id="input" placeholder="Tell the agent what happened…" autocomplete="off">
+        <button class="primary" id="send">Send</button>
+      </form>
+    </section>
+    <section class="card">
+      <div class="head"><h2>Alice's inbox</h2><span id="inboxCount" class="count" hidden>0</span></div>
+      <div class="body" id="inbox"><div class="empty">Notifications the agent sends land here.</div></div>
+    </section>
+  </div>
+
+  <!-- Jane + John -->
+  <div class="col">
+    <section class="card grow">
+      <div class="head">
+        <span class="avatar" style="background:var(--jane)">J</span>
+        <h2>Manager</h2><span class="who">jane · role MANAGER · human task “Manager sign-off”</span>
+      </div>
+      <div class="body" id="tasks"><div class="empty">No sign-offs waiting.</div></div>
+    </section>
+    <section class="card grow">
+      <div class="head">
+        <span class="avatar" style="background:var(--john)">J</span>
+        <h2>Accountant</h2><span class="who">john · role ACCOUNTANT · approval gate on executePayment</span>
+      </div>
+      <div class="body" id="reviews"><div class="empty">No payments waiting for release.</div></div>
+    </section>
+  </div>
+
+  <!-- Ops -->
+  <div class="col">
+    <section class="card grow">
+      <div class="head"><h2>Operations</h2><span class="who">what the workflow engine recorded</span></div>
+      <div class="body">
+        <div class="kv">
+          <span class="k">Run</span><span id="runId" class="mono muted">—</span>
+          <span class="k">Status</span><span id="runStatus">—</span>
+        </div>
+        <div class="row">
+          <button id="checkState">Ask agent for final result</button>
+          <span id="stateOut" class="muted"></span>
+        </div>
+        <h3 style="margin:8px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Activity timeline</h3>
+        <div class="timeline" id="timeline"><div class="empty">Start a conversation to see the run.</div></div>
+      </div>
+    </section>
+  </div>
+</main>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
